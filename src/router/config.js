@@ -48,6 +48,31 @@ const options = {
               path: 'analysis',
               name: '分析页',
               component: () => import('@/pages/dashboard/analysis'),
+            },
+            {
+              path: 'analysis1',
+              name: '数据分析页',
+              component: () => import('@/pages/dashboard/analysis1'),
+            },
+            {
+              path: 'analysis2',
+              name: '数据分析页2',
+              component: () => import('@/pages/dashboard/analysis2'),
+            },
+            {
+              path: 'analysis3',
+              name: '数据分析页3',
+              component: () => import('@/pages/dashboard/analysis3'),
+            },
+            {
+              path: 'analysis3Com',
+              name: '数据分析页3Com',
+              component: () => import('@/pages/dashboard/analysis3Com'),
+            },
+            {
+              path: 'analysis3DemoConfig',
+              name: '数据分析页3配置项举例',
+              component: () => import('@/pages/dashboard/analysis3DemoConfig'),
             }
           ]
         },
