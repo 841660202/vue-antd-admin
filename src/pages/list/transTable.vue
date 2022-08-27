@@ -149,7 +149,7 @@ import {
   format2TransAuthTable,
   formatTransAuthTable2Form,
   initData2Columns,
-  formatColumnUser,
+  encodeColumnUser,
   initData2ColumnUsers,
   mock_api_user_auth_amt,
   defaultColumns,
@@ -266,7 +266,7 @@ export default {
     },
     handleAddUser() {
       this.userCount++;
-      const userItem = formatColumnUser({}, this.userCount);
+      const userItem = encodeColumnUser({}, this.userCount);
 
       this.columns.splice(3, 0, userItem);
 
