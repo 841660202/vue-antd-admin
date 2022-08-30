@@ -82,6 +82,12 @@
             </a-button>
           </a-popconfirm>
         </div>
+
+        <!-- 授权额度 -->
+        <div :key="user.children[1].key" :slot="user.children[1].dataIndex">
+          哈喽
+        </div>
+
         <!-- 开始时间 -->
         <div :key="user.children[2].key" :slot="user.children[2].slots.title">
           生效日
@@ -107,26 +113,23 @@
           </a-date-picker>
         </div>
       </template>
+
       <!-- 自定义内容 -->
-      <template slot="operation" slot-scope="text, record, index">
-        <div class="editable-row-operations">
-          <span v-if="record.editable">
-            <a @click="() => save(record.key)">Save</a>
-            <a-popconfirm
-              title="Sure to cancel?"
-              @confirm="() => cancel(record.key)"
-            >
-              <a>Cancel</a>
-            </a-popconfirm>
-          </span>
-          <span v-else>
-            <a :disabled="editingKey !== ''" @click="() => edit(record.key)"
-              >Edit</a
-            >
-          </span>
+      <template
+        v-for="columnUser in columnUsers"
+        :slot="columnUser.children[1].scopedSlots.customRender"
+        slot-scope="text, record, index"
+      >
+        <div :key="columnUser.children[1].scopedSlots.customRender">
+          <a-input
+            placeholder="text"
+            :value="text"
+            @change="(e) =>handleChangeField(index, record, columnUser, 'authAmt',e.target.value)"
+          />
         </div>
       </template>
     </a-table>
+    {{ columnUsers[0].children[1].scopedSlots.customRender }}
     <div class="center actions-wrap">
       <a-space>
         <a-button size="small" type="primary" @click="() => handleSave()">
@@ -357,6 +360,19 @@ export default {
           console.log("Cancel");
         },
       });
+    },
+    // 通过：下标，uuid , 字段名 更新this.data某个record记录（抽出来用于复用）
+    handleUpdateDataItemByField(index, columnUser, field, value) {
+      const { uuid } = columnUser;
+      this.$set(this.data, index, {
+        ...this.data[index],
+        [`userIndex_${uuid}_${field}`]: value,
+      });
+    },
+    // 用于列表某个字段更新使用
+    handleChangeField(index, record, columnUser, field, val) {
+      console.log("index, columnUser, val", index, columnUser, val);
+      this.handleUpdateDataItemByField(index, columnUser, field, val);
     },
   },
 };

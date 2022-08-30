@@ -129,6 +129,14 @@ const options = {
               component: () => import('@/pages/list/transTable'),
             },
             {
+              path: 'editTable',
+              name: '转授权',
+              meta: {
+                authority: 'queryForm',
+              },
+              component: () => import('@/pages/list/edit-list'),
+            },
+            {
               path: 'query/detail/:id',
               name: '查询详情',
               meta: {

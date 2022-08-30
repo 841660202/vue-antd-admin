@@ -201,12 +201,6 @@ export const defaultColumns = [
       },
     ],
   },
-  // {
-  //   title: "operation",
-  //   dataIndex: "operation",
-  //   width: 100,
-  //   scopedSlots: { customRender: "operation" },
-  // },
 ];
 
 export function encodeColumnUser(user, index) {
@@ -228,7 +222,7 @@ export function encodeColumnUser(user, index) {
         dataIndex: `userIndex_${index}_authAmt`,
         key: `userIndex_${index}_authAmt`,
         width: 100,
-        scopedSlots: { customRender: `userIndex_data_${index}` }, // 用于定制可编辑输入框
+        scopedSlots: { customRender: `userIndex_${index}_authAmt` }, // 用于定制可编辑输入框
       },
       {
         dataIndex: `userIndex_${index}_startDate`,
