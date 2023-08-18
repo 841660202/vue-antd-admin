@@ -4,16 +4,9 @@
     <a-divider orientation="left">
       <small style="font-weight: normal;">转授权额度信息设置</small>
     </a-divider>
-    <a-table
-      :columns="columns"
-      :data-source="data"
-      bordered
-      :pagination="false"
-      rowKey="labelId"
-      size="small"
-      :scroll="{ x: 'calc(80%)' }"
-    >
+    <a-table :columns="columns" :data-source="data" bordered :pagination="false" rowKey="labelId" size="small" :scroll="{ x: 'calc(80%)' }">
       <!-- 自定义表头内容 -->
+
       <!-- 定制经理 -->
       <template slot="addUser"
         >{{ current.name }}
@@ -22,6 +15,9 @@
         </a-button>
       </template>
       <!-- 定制用户 -->
+      <span slot="titleValue" class="form-table-heard">
+        分值区间
+      </span>
       <template v-for="user in columnUsers">
         <!-- 用户选择 -->
         <div :key="user.slots.title" :slot="user.slots.title">
@@ -64,24 +60,26 @@
               {{ d.text }}
             </a-select-option>
           </a-select>
-          <a-button
-            type="link"
-            class="danger"
-            @click="() => handleClickCopyAuthAmt(true, user)"
-          >
+          <a-button type="link" class="danger" @click="() => handleClickCopyAuthAmt(true, user)">
             复制
           </a-button>
 
-          <a-popconfirm
-            placement="top"
-            @confirm="() => handleDeleteUser(user)"
-            title="确认要删除该用户吗？"
-          >
+          <a-popconfirm placement="top" @confirm="() => handleDeleteUser(user)" title="确认要删除该用户吗？">
             <a-button type="link" class="danger">
               删除
             </a-button>
           </a-popconfirm>
         </div>
+
+        <!-- 设置授权额度 -->
+        <span style="color: rgb(0, 255, 204)" :key="user.children[0].key" :slot="user.children[0].slots.title">
+          <a-tooltip placement="topLeft">
+            <template slot="title">
+              <span>{{ user.children[0].tooltip }}</span>
+            </template>
+            {{ user.children[0].tooltip }}
+          </a-tooltip>
+        </span>
 
         <!-- 授权额度 -->
         <div :key="user.children[1].key" :slot="user.children[1].dataIndex">
@@ -91,40 +89,26 @@
         <!-- 开始时间 -->
         <div :key="user.children[2].key" :slot="user.children[2].slots.title">
           生效日
-          <a-date-picker
-            @change="(v) => handleChangeDate(v, user, 'startDate')"
-          >
-            <a-icon
-              type="setting"
-              theme="filled"
-              style="color: #1890ff;cursor: pointer;"
-            />
+          <a-date-picker @change="(v) => handleChangeDate(v, user, 'startDate')">
+            <a-icon type="setting" theme="filled" style="color: #1890ff;cursor: pointer;" />
           </a-date-picker>
         </div>
         <!-- 结束时间 -->
         <div :key="user.children[3].key" :slot="user.children[3].slots.title">
           到期日
           <a-date-picker @change="(v) => handleChangeDate(v, user, 'endDate')">
-            <a-icon
-              type="setting"
-              theme="filled"
-              style="color: #1890ff;cursor: pointer;"
-            />
+            <a-icon type="setting" theme="filled" style="color: #1890ff;cursor: pointer;" />
           </a-date-picker>
         </div>
       </template>
 
       <!-- 自定义内容 -->
-      <template
-        v-for="columnUser in columnUsers"
-        :slot="columnUser.children[1].scopedSlots.customRender"
-        slot-scope="text, record, index"
-      >
+      <template v-for="columnUser in columnUsers" :slot="columnUser.children[1].scopedSlots.customRender" slot-scope="text, record, index">
         <div :key="columnUser.children[1].scopedSlots.customRender">
           <a-input
             placeholder="text"
             :value="text"
-            @change="(e) =>handleChangeField(index, record, columnUser, 'authAmt',e.target.value)"
+            @change="(e) => handleChangeField(index, record, columnUser, 'authAmt', e.target.value)"
           />
         </div>
       </template>
@@ -156,18 +140,18 @@ import {
   initData2ColumnUsers,
   mock_api_user_auth_amt,
   defaultColumns,
-} from "./auth";
+} from './auth';
 
 export default {
   data() {
     return {
-      current: { name: "王经理" },
+      current: { name: '王经理' },
       userCount: 0,
       data: [],
-      editingKey: "",
+      editingKey: '',
       columnUsers: [],
-      userOptions1: [{ value: "001", text: "小明" }],
-      userOptions2: [{ value: "101", text: "小白" }],
+      userOptions1: [{ value: '001', text: '小明' }],
+      userOptions2: [{ value: '101', text: '小白' }],
     };
   },
   created() {
@@ -187,7 +171,7 @@ export default {
     // 获取用户之前授权额度,并按照filed进行更新
     async handleGetAuthAmtBef2UpdateDatas(delegatedUser, columnUser, field) {
       const { uuid } = columnUser;
-      const params = { labelId: [""], delegatedUser };
+      const params = { labelId: [''], delegatedUser };
       params.labelId = this.data?.map((item) => item.labelId);
       // 去后端请求数据
       const fromUserAuthAmts = await mock_api_user_auth_amt;
@@ -201,11 +185,7 @@ export default {
       });
     },
     // 拷贝其他用户授权额度(直接触发参数少，手动触发参数多)
-    async handleClickCopyAuthAmt(
-      manual /**是否手动触发 */,
-      columnUser,
-      fromUser
-    ) {
+    async handleClickCopyAuthAmt(manual /**是否手动触发 */, columnUser, fromUser) {
       let uuid = columnUser.uuid;
       let _fromUser;
       if (manual) {
@@ -216,14 +196,12 @@ export default {
         _fromUser = fromUser;
       }
 
-      console.log("_fromUser", _fromUser, manual);
+      console.log('_fromUser', _fromUser, manual);
       // 检测是否从已有用户中获取授权额度
       const fdIndex = this.columnUsers.findIndex(
-        (item) =>
-          !!item?.user?.delegatedUserName &&
-          item?.user?.delegatedUserName === _fromUser?.delegatedUserName
+        (item) => !!item?.user?.delegatedUserName && item?.user?.delegatedUserName === _fromUser?.delegatedUserName
       );
-      console.log("fdIndex", fdIndex);
+      console.log('fdIndex', fdIndex);
 
       if (fdIndex > -1) {
         const fromUUID = this.columnUsers[fdIndex].uuid;
@@ -233,24 +211,18 @@ export default {
           return {
             ...item,
             // [`userIndex_${uuid}_authAmt`]: fromUserAuthAmts[index].authAmt,
-            [`userIndex_${uuid}_authAmt`]: item[
-              `userIndex_${fromUUID}_authAmt`
-            ],
+            [`userIndex_${uuid}_authAmt`]: item[`userIndex_${fromUUID}_authAmt`],
           };
         });
       } else {
         // 不存在，请求后台获取fromUser的数据填充
-        this.handleGetAuthAmtBef2UpdateDatas(
-          fromUser?.delegatedUserName,
-          columnUser,
-          "authAmt"
-        );
+        this.handleGetAuthAmtBef2UpdateDatas(fromUser?.delegatedUserName, columnUser, 'authAmt');
       }
     },
     updateUserAuthAmtField() {},
     // 更新用户数据
     handleUpdateUser(columnUser) {
-      console.log("user", columnUser);
+      console.log('user', columnUser);
       const { uuid } = columnUser;
       // 更新data数据
       // this.data = this.columnUsers.filter((item) => item.uuid !== uuid);
@@ -260,7 +232,7 @@ export default {
       // this.columns = this.columns.filter((item) => item.uuid !== uuid);
     },
     handleDeleteUser(user) {
-      console.log("user", user);
+      console.log('user', user);
       const { uuid } = user;
       // 删除 columnUsers
       this.columnUsers = this.columnUsers.filter((item) => item.uuid !== uuid);
@@ -274,14 +246,12 @@ export default {
       this.columns.splice(3, 0, userItem);
 
       this.columnUsers.push(userItem);
-      console.log("this.columns", this.columns);
-      console.log("this.columnUsers", this.columnUsers);
+      console.log('this.columns', this.columns);
+      console.log('this.columnUsers', this.columnUsers);
     },
     handleChangeUser(selectUser, columnUser) {
       // 更新选中的用户
-      const fdIndex = this.columnUsers.findIndex(
-        (item) => item.uuid === columnUser.uuid
-      );
+      const fdIndex = this.columnUsers.findIndex((item) => item.uuid === columnUser.uuid);
       const target = this.columnUsers[fdIndex];
       target.user = {
         delegatedUser: selectUser.delegatedUser,
@@ -290,11 +260,7 @@ export default {
       this.$set(this.columnUsers, fdIndex, target);
 
       // 获取用户数据，更新 “授权额度(亿元) (生效中)”
-      this.handleGetAuthAmtBef2UpdateDatas(
-        selectUser.delegatedUser,
-        columnUser,
-        `authAmtBef`
-      );
+      this.handleGetAuthAmtBef2UpdateDatas(selectUser.delegatedUser, columnUser, `authAmtBef`);
     },
     async handleChangeCopyUser(fromUser, columnUser) {
       const { uuid } = columnUser;
@@ -311,12 +277,12 @@ export default {
         return {
           ...item,
           // [`userIndex_${uuid}_authAmt`]: fromUserAuthAmts[index].authAmt,
-          [`userIndex_${uuid}_${filed}`]: date.format("YYYY-MM-DD"),
+          [`userIndex_${uuid}_${filed}`]: date.format('YYYY-MM-DD'),
         };
       });
     },
     handleSave() {
-      console.log("this.data", this.data);
+      console.log('this.data', this.data);
       const formdatas = this.data.map((record) => {
         return {
           labelId: record.labelId,
@@ -346,18 +312,18 @@ export default {
         };
       });
 
-      console.log("formdatas", formdatas);
+      console.log('formdatas', formdatas);
     },
     handleSubmit() {},
     handleClose() {
       this.$confirm({
-        title: "确定进行关闭吗?",
-        okType: "danger",
+        title: '确定进行关闭吗?',
+        okType: 'danger',
         onOk() {
-          console.log("OK");
+          console.log('OK');
         },
         onCancel() {
-          console.log("Cancel");
+          console.log('Cancel');
         },
       });
     },
@@ -371,7 +337,7 @@ export default {
     },
     // 用于列表某个字段更新使用
     handleChangeField(index, record, columnUser, field, val) {
-      console.log("index, columnUser, val", index, columnUser, val);
+      console.log('index, columnUser, val', index, columnUser, val);
       this.handleUpdateDataItemByField(index, columnUser, field, val);
     },
   },
