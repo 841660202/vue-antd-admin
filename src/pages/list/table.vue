@@ -21,10 +21,17 @@ export default {
         },
         {
           title: '订单号订单号订单号订单号订单号订单号订单号订单号',
-
           dataIndex: 'orderId',
           width: 100,
           ellipsis: true,
+          // customRender: (text, record, index) => (
+          //   <a-tooltip placement="topLeft">
+          //     <template slot="title">
+          //       <span>{{ text }}</span>
+          //     </template>
+          //     {{ text }}
+          //   </a-tooltip>
+          // ),
         },
         {
           searchAble: true,
@@ -60,7 +67,12 @@ export default {
           dataType: 'time',
         },
       ],
-      dataSource: [],
+      dataSource: [
+        {
+          name: 'name审核时间审核时间审核时间审核时间审核时间审核时间审核时间',
+          orderId: 'orderId审核时间审核时间审核时间审核时间审核时间审核时间审核时间',
+        },
+      ],
       selectedRows: [],
     };
   },
